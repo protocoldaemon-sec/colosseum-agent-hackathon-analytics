@@ -1,161 +1,267 @@
-# Forum Agent Conversation Analytics Platform
+# Colosseum Agent Hackathon Analytics Platform
 
-Full-stack analytics platform for collecting and analyzing agent-to-agent conversations from the Colosseum Agent Hackathon forum with AI-powered insights.
+## Overview
 
-## ✨ Features
+A comprehensive full-stack analytics platform designed for collecting, analyzing, and visualizing agent-to-agent conversations from the Colosseum Agent Hackathon forum. The platform leverages real-time data processing, AI-powered insights, and advanced visualization techniques to provide deep understanding of agent behavior patterns and communication dynamics.
 
-### 📊 Analytics Dashboard
-- Real-time statistics and metrics
-- Top agents leaderboard
-- Interactive charts and graphs
-- Behavior pattern analysis
+## Key Features
 
-### 🤖 AI Assistant (NEW!)
-- **Interactive Chat**: Ask questions about your dataset
-- **Smart Summarization**: One-click comprehensive summaries
-- **Topic Search**: Find agents and conversations by topic
-- **Chat History**: Save and continue conversations
-- **Powered by**: OpenRouter + NVIDIA Nemotron AI
+### Real-Time Analytics Dashboard
+- Live statistics and performance metrics with 5-second update intervals
+- Dynamic agent leaderboard with activity rankings
+- Interactive data visualizations using Recharts
+- Comprehensive behavior pattern analysis
+- Automated data collection and storage via Supabase
 
-### 📈 Data Visualization
-- Activity timeline (14 days)
-- Agent behavior distribution
-- Score comparison charts
-- Top tags analysis
-- Real-time updates
+### AI-Powered Assistant
+- Interactive conversational interface for dataset exploration
+- Context-aware question answering using RAG (Retrieval-Augmented Generation)
+- One-click comprehensive dataset summarization
+- Advanced topic-based search and filtering
+- Persistent chat history with session management
+- Powered by OpenRouter API with NVIDIA Nemotron AI models
 
-### 🎨 Modern UI
-- Dark/Light mode
-- Multi-language (EN/ID)
-- Responsive design
-- Smooth animations
-- Professional color palette
+### Advanced Data Visualization
+- 14-day activity timeline with trend analysis
+- Agent behavior distribution charts
+- Comparative score analysis (Pure Agent vs Human Control)
+- Tag frequency and topic distribution analysis
+- Real-time data synchronization across all components
 
-## 🎯 Purpose
+### Modern User Interface
+- Dual theme support (Dark/Light mode)
+- Multi-language support (English/Indonesian)
+- Desktop-optimized layout (1920x1080 resolution)
+- Smooth animations and transitions using Framer Motion
+- Professional color palette with accessibility considerations
 
-Collect agent conversation datasets for research on:
-- How agents think and communicate
-- Distinguishing pure agent behavior vs human-controlled behavior
-- Agent-to-agent communication patterns
-- Training data for AI models
-- **AI-powered insights and analysis**
+## Research Objectives
 
-## 📁 File Structure
+This platform serves as a research tool for studying:
+- Agent cognitive patterns and communication strategies
+- Behavioral differentiation between autonomous agents and human-controlled entities
+- Inter-agent communication networks and collaboration patterns
+- Dataset generation for machine learning model training
+- Temporal evolution of agent behavior in competitive environments
+
+## Architecture
+
+### Technology Stack
+
+**Backend**
+- Node.js with TypeScript
+- Express.js for RESTful API
+- Supabase for real-time database and authentication
+- OpenRouter API for AI capabilities
+- Rate limiting and security middleware
+
+**Frontend**
+- React 18 with TypeScript
+- Vite for build optimization
+- Recharts for data visualization
+- Framer Motion for animations
+- Context API for state management
+
+**Database Schema**
+- 12 interconnected tables with Row Level Security (RLS)
+- Real-time subscriptions enabled
+- Optimized indexes for query performance
+- Automated data aggregation and analytics
+
+### Project Structure
 
 ```
-experimental/
-├── simple-collector.js       # Main collector script
-├── analyze-simple.js         # Analysis script
+colosseum-agent-hackathon-analytics/
+├── backend/
+│   ├── src/
+│   │   ├── server.ts                      # Main Express server
+│   │   ├── collector.ts                   # Data collection service
+│   │   ├── supabase-service.ts            # Database operations
+│   │   ├── rag-service.ts                 # AI RAG implementation
+│   │   ├── realtime-analytics-service.ts  # Real-time metrics
+│   │   ├── ai-service.ts                  # OpenRouter integration
+│   │   └── middleware/                    # Security & validation
+│   ├── package.json
+│   └── tsconfig.json
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Dashboard.tsx              # Main dashboard
+│   │   │   ├── Analytics.tsx              # Analytics visualizations
+│   │   │   ├── Conversations.tsx          # Conversation browser
+│   │   │   ├── AIAssistant.tsx            # AI chat interface
+│   │   │   └── ui/                        # Reusable UI components
+│   │   ├── context/                       # React contexts
+│   │   ├── hooks/                         # Custom React hooks
+│   │   └── App.tsx
+│   ├── package.json
+│   └── vite.config.ts
+├── supabase/
+│   ├── migrations/                        # Database migrations
+│   └── config.toml                        # Supabase configuration
 ├── datasets/
-│   ├── agent-conversations.jsonl      # Raw dataset (759KB, 681 entries)
-│   ├── agent-profiles.json            # Agent profiles (24KB, 60 agents)
-│   ├── analysis-report.json           # Detailed analysis
-│   ├── pure-agent-conversations.jsonl # Filtered pure agent (≥70%)
-│   └── human-controlled-conversations.jsonl # Filtered human (≥70%)
+│   ├── agent-conversations.jsonl          # Raw conversation data
+│   ├── agent-profiles.json                # Agent metadata
+│   └── analysis-report.json               # Statistical analysis
+├── railway.json                           # Railway deployment config
+├── nixpacks.toml                          # Build configuration
 └── README.md
 ```
 
-## 🚀 Quick Start
+## Installation and Setup
 
-### Option 1: Full Stack with AI (Recommended)
+### Prerequisites
 
-```powershell
-# Start both backend and frontend with AI features
-.\start-with-ai.ps1
+- Node.js 18.x or higher
+- npm or yarn package manager
+- Supabase account (for database and real-time features)
+- OpenRouter API key (for AI features)
+
+### Environment Configuration
+
+#### Backend Environment Variables
+
+Create a `.env` file in the `backend/` directory:
+
+```env
+# Server Configuration
+PORT=3000
+CORS_ORIGIN=http://localhost:5173
+
+# OpenRouter AI Configuration (Optional)
+OPENROUTER_API_KEY=sk-or-v1-your-api-key-here
+
+# Supabase Configuration (Required)
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
 
-Then open: **http://localhost:5173**
+#### Frontend Environment Variables
 
-### Option 2: Manual Start
+Create a `.env` file in the `frontend/` directory:
 
-**Terminal 1 - Backend:**
+```env
+VITE_API_URL=http://localhost:3000
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
+
+### Installation Steps
+
+#### Option 1: Full Stack Development
+
+**Terminal 1 - Backend Server:**
 ```bash
 cd backend
 npm install
 npm run dev
 ```
 
-**Terminal 2 - Frontend:**
+**Terminal 2 - Frontend Application:**
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Then open: **http://localhost:5173**
+Access the application at: http://localhost:5173
 
-### Option 3: Data Collection Only
+#### Option 2: Production Build
+
+**Backend:**
+```bash
+cd backend
+npm install
+npm run build
+npm start
+```
+
+**Frontend:**
+```bash
+cd frontend
+npm install
+npm run build
+npm run preview
+```
+
+#### Option 3: Data Collection Only
 
 ```bash
 cd backend
-node src/simple-collector.js
+npm install
+npm run collect
 ```
 
-## 🤖 AI Features Setup
+### Database Setup
 
-### 1. Get OpenRouter API Key
-Visit [https://openrouter.ai/keys](https://openrouter.ai/keys) and create an account
+1. Create a Supabase project at https://supabase.com
+2. Navigate to Settings > API to obtain your credentials
+3. Run the migration file located in `supabase/migrations/`
+4. Enable Realtime for all tables in the Supabase dashboard
+5. Configure Row Level Security (RLS) policies as defined in the migration
 
-### 2. Configure Backend
-Add to `backend/.env`:
-```env
-OPENROUTER_API_KEY=sk-or-v1-your-key-here
+## Usage Guide
+
+### Data Collection
+
+The platform includes an automated data collector that continuously monitors the Colosseum Agent Hackathon forum:
+
+```bash
+cd backend
+npm run collect
 ```
 
-### 3. Start & Use
-```powershell
-.\start-with-ai.ps1
-```
+**Collection Process:**
+- Fetches the 100 most recent forum posts
+- Retrieves all associated comments for each post
+- Analyzes message content for behavioral patterns
+- Calculates Pure Agent vs Human Control scores
+- Stores data in Supabase with real-time updates
+- Runs continuously with 60-second intervals
 
-Click **"Ask AI"** tab and start asking questions!
+**Stop Collection:** Press Ctrl+C
 
-**Example Questions:**
+### Data Analysis
+
+The platform provides automated analysis through the web interface:
+
+1. Navigate to the Analytics tab
+2. View real-time statistics and visualizations
+3. Explore agent rankings and behavior patterns
+4. Filter conversations by tags and categories
+5. Export data for external analysis
+
+### AI Assistant Usage
+
+The AI Assistant provides intelligent insights into your dataset:
+
+**Interactive Chat:**
+- Ask natural language questions about agents and conversations
+- Receive context-aware responses based on your data
+- Continue conversations across sessions
+
+**Example Queries:**
 - "What are the top 5 most active agents?"
-- "Show me agents discussing DeFi"
-- "Summarize the dataset"
-- "What trends do you see?"
+- "Show me agents discussing DeFi topics"
+- "Analyze the behavior patterns of agent X"
+- "What trends do you see in the last 7 days?"
 
-📚 **Full AI Guide**: [README-AI.md](README-AI.md)
+**Summarization:**
+- Generate comprehensive dataset summaries
+- Identify key patterns and insights
+- Export summaries for reporting
 
-## 🚀 Usage
+**Topic Search:**
+- Search for specific topics or keywords
+- Filter agents by discussion themes
+- Discover conversation clusters
 
-### 1. Collect Data
+## Data Schema
 
-```bash
-cd experimental
-node simple-collector.js
-```
+### Conversation Data Format
 
-The collector will:
-- Fetch the 100 most recent posts from the forum
-- Fetch all comments for each post
-- Analyze each message (pure agent vs human control score)
-- Save to `datasets/agent-conversations.jsonl`
-- Update every 1 minute
-
-**Stop collector**: Press `Ctrl+C`
-
-### 2. Analyze Data
-
-```bash
-node analyze-simple.js
-```
-
-Analysis generates:
-- Dataset overview (total entries, posts, comments, unique agents)
-- Agent behavior analysis (average scores)
-- Top 15 pure agents
-- Top 15 human-controlled agents
-- Conversation patterns
-- Top tags
-- Filtered datasets
-- Agent profiles
-
-## 📊 Dataset Format
-
-### agent-conversations.jsonl
-
-Each line is a JSON object:
+Each conversation entry in `agent-conversations.jsonl` contains:
 
 ```json
 {
@@ -185,85 +291,344 @@ Each line is a JSON object:
 }
 ```
 
-### agent-profiles.json
+### Agent Profile Format
 
-Array of agent profiles:
+Agent profiles in `agent-profiles.json` include:
 
 ```json
-[
-  {
-    "agentName": "ars-agent",
-    "agentId": 500,
-    "xUsername": "Agenticreserve",
-    "totalMessages": 18,
-    "posts": 8,
-    "comments": 10,
-    "avgPureScore": 59.9,
-    "avgHumanScore": 40.1,
-    "tags": ["ai", "defi", "governance"],
-    "collaborationMentions": 3,
-    "technicalContent": 15,
-    "firstSeen": "2026-02-06T08:37:01.825Z",
-    "lastSeen": "2026-02-06T09:16:53.662Z"
-  }
-]
+{
+  "agentName": "ars-agent",
+  "agentId": 500,
+  "xUsername": "Agenticreserve",
+  "totalMessages": 18,
+  "posts": 8,
+  "comments": 10,
+  "avgPureScore": 59.9,
+  "avgHumanScore": 40.1,
+  "tags": ["ai", "defi", "governance"],
+  "collaborationMentions": 3,
+  "technicalContent": 15,
+  "firstSeen": "2026-02-06T08:37:01.825Z",
+  "lastSeen": "2026-02-06T09:16:53.662Z"
+}
 ```
 
-## 🤖 Analysis Indicators
+### Database Tables
 
-### Pure Agent Indicators (+score)
-- Structured formatting (`##`, `**`, code blocks)
-- Technical precision (metrics, APIs, GitHub links)
-- Consistent agent language patterns
-- Self-referential behavior
-- Rapid detailed responses
+The Supabase database includes the following tables:
 
-### Human Control Indicators (+score)
-- Casual language (lol, emojis)
-- Emotional expressions
-- Typos and informal grammar
-- Personal anecdotes
-- Off-topic short responses
+1. **agents** - Agent metadata and statistics
+2. **conversations** - Individual messages and posts
+3. **tags** - Topic categorization
+4. **agent_interactions** - Inter-agent communication patterns
+5. **suspicious_patterns** - Anomaly detection results
+6. **agent_activity_timeline** - Temporal activity tracking
+7. **realtime_metrics** - Live performance indicators
+8. **agent_growth_tracking** - Growth rate analysis
+9. **network_clusters** - Community detection results
+10. **analytics_snapshots** - Historical data snapshots
+11. **ai_chat_history** - AI assistant conversation logs
+12. **conversation_tags** - Many-to-many tag relationships
 
-## 📈 Current Stats
+## Behavioral Analysis Methodology
 
-**Dataset**: 681 entries (100 posts, 581 comments)
-**Agents**: 60 unique agents
-**Average Pure Agent Score**: 53.96%
-**Average Human Control Score**: 46.04%
+### Pure Agent Indicators
 
-### Top Pure Agents (≥3 messages)
-1. **pincer**: 63.0% pure (5 msgs)
-2. **Vex**: 61.2% pure (18 msgs)
-3. **ars-agent**: 59.9% pure (18 msgs)
-4. **JacobsClawd**: 59.2% pure (14 msgs)
-5. **Nemmie_MnM-Private-Leverage-Lending**: 58.3% pure (3 msgs)
+The following patterns increase the Pure Agent Score:
 
-### Top Tags
-1. **ai**: 88 posts
-2. **defi**: 38 posts
-3. **infra**: 37 posts
-4. **progress-update**: 34 posts
-5. **trading**: 33 posts
+- **Structured Formatting**: Use of markdown syntax (headers, bold, code blocks)
+- **Technical Precision**: References to APIs, metrics, GitHub repositories
+- **Consistent Language Patterns**: Predictable sentence structure and vocabulary
+- **Self-Referential Behavior**: References to own capabilities and limitations
+- **Rapid Detailed Responses**: Quick replies with comprehensive information
+- **Formal Tone**: Professional and objective communication style
 
-## 🔬 Research Applications
+### Human Control Indicators
 
-1. **Agent Behavior Classification**: Train ML models to detect pure agent vs human-controlled
-2. **Conversation Pattern Analysis**: Study how agents communicate and collaborate
-3. **Topic Modeling**: Identify trending topics in agent discussions
-4. **Network Analysis**: Map agent interaction networks
-5. **Temporal Analysis**: Track how agent behavior evolves over time
+The following patterns increase the Human Control Score:
 
-## 📝 Notes
+- **Casual Language**: Use of colloquialisms, slang, and informal expressions
+- **Emotional Content**: Expression of feelings, opinions, and subjective views
+- **Typographical Errors**: Spelling mistakes and grammatical inconsistencies
+- **Personal Anecdotes**: Sharing of personal experiences and stories
+- **Off-Topic Content**: Brief responses unrelated to technical discussions
+- **Variable Response Patterns**: Inconsistent timing and detail levels
 
-- Dataset updates every 1 minute while collector is running
-- Scores calculated based on linguistic patterns, not ground truth
-- 70% threshold for high-confidence classification
-- Conversation history tracked for context analysis
+### Scoring Methodology
 
-## 🎓 Research by ARS Agent
+- Scores are calculated using linguistic pattern analysis
+- Each indicator contributes to the respective score category
+- Scores are normalized to percentages (0-100%)
+- A 70% threshold indicates high-confidence classification
+- Scores do not represent ground truth but statistical likelihood
 
-Part of the Agentic Reserve System (ARS) research initiative for understanding agent-to-agent communication patterns in the Colosseum Agent Hackathon ecosystem.
+## Dataset Statistics
 
-**GitHub**: https://github.com/protocoldaemon-sec/agentic-reserve-system
-**Forum**: https://colosseum.com/agent-hackathon
+### Current Metrics
+
+- **Total Entries**: 681 conversations (100 posts, 581 comments)
+- **Unique Agents**: 60 distinct agent identities
+- **Average Pure Agent Score**: 53.96%
+- **Average Human Control Score**: 46.04%
+- **Collection Period**: Continuous monitoring with 60-second intervals
+- **Data Storage**: Supabase real-time database with JSONL backup
+
+### Top Performing Agents
+
+Agents with highest Pure Agent scores (minimum 3 messages):
+
+1. **pincer**: 63.0% pure agent behavior (5 messages)
+2. **Vex**: 61.2% pure agent behavior (18 messages)
+3. **ars-agent**: 59.9% pure agent behavior (18 messages)
+4. **JacobsClawd**: 59.2% pure agent behavior (14 messages)
+5. **Nemmie_MnM-Private-Leverage-Lending**: 58.3% pure agent behavior (3 messages)
+
+### Topic Distribution
+
+Most frequently discussed topics by tag frequency:
+
+1. **ai**: 88 conversations
+2. **defi**: 38 conversations
+3. **infra**: 37 conversations
+4. **progress-update**: 34 conversations
+5. **trading**: 33 conversations
+
+## Research Applications
+
+This platform enables various research methodologies:
+
+### Machine Learning Applications
+
+**Agent Behavior Classification**
+- Train supervised learning models to distinguish autonomous agents from human-controlled entities
+- Feature extraction from linguistic patterns and temporal behaviors
+- Cross-validation using labeled datasets with known agent types
+
+**Natural Language Processing**
+- Topic modeling and semantic analysis of agent communications
+- Sentiment analysis and emotional tone detection
+- Language pattern recognition for agent fingerprinting
+
+### Network Analysis
+
+**Interaction Mapping**
+- Graph-based analysis of agent communication networks
+- Community detection and cluster identification
+- Influence propagation and information flow tracking
+
+**Collaboration Patterns**
+- Co-occurrence analysis of agent interactions
+- Thread participation and engagement metrics
+- Response time and conversation depth analysis
+
+### Temporal Analysis
+
+**Behavioral Evolution**
+- Longitudinal studies of agent behavior changes
+- Activity pattern recognition across time periods
+- Trend identification and forecasting
+
+**Performance Metrics**
+- Message frequency and consistency tracking
+- Response quality and relevance scoring
+- Engagement rate calculations
+
+### Dataset Generation
+
+**Training Data Creation**
+- Labeled datasets for supervised learning
+- Synthetic data generation based on observed patterns
+- Benchmark datasets for model evaluation
+
+**Data Augmentation**
+- Conversation thread reconstruction
+- Missing data imputation
+- Feature engineering for downstream tasks
+
+## Deployment
+
+### Railway Deployment
+
+The platform is configured for deployment on Railway using Nixpacks:
+
+**Prerequisites:**
+- Railway account
+- GitHub repository connected to Railway
+- Environment variables configured
+
+**Deployment Steps:**
+
+1. Push code to GitHub repository
+2. Create new Railway project
+3. Connect GitHub repository
+4. Configure environment variables in Railway dashboard
+5. Deploy backend and frontend as separate services
+
+**Backend Configuration:**
+```env
+PORT=3000
+CORS_ORIGIN=https://your-frontend-url.railway.app
+OPENROUTER_API_KEY=your-api-key
+SUPABASE_URL=your-supabase-url
+SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+```
+
+**Frontend Configuration:**
+```env
+VITE_API_URL=https://your-backend-url.railway.app
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
+
+### Alternative Deployment Options
+
+**Vercel (Frontend)**
+- Optimized for React applications
+- Automatic deployments from Git
+- Edge network distribution
+
+**Heroku (Backend)**
+- Traditional PaaS deployment
+- Add-on ecosystem for databases
+- Dyno-based scaling
+
+**Docker**
+- Containerized deployment
+- Kubernetes orchestration support
+- Multi-environment consistency
+
+## API Documentation
+
+### REST Endpoints
+
+**Analytics Endpoints**
+- `GET /api/agents` - Retrieve all agent profiles
+- `GET /api/agents/:id` - Get specific agent details
+- `GET /api/conversations` - List all conversations
+- `GET /api/conversations/:id` - Get conversation details
+- `GET /api/analytics/summary` - Get dataset summary statistics
+- `GET /api/analytics/trends` - Get temporal trends
+
+**AI Assistant Endpoints**
+- `POST /api/ai/chat` - Send message to AI assistant
+- `POST /api/ai/summarize` - Generate dataset summary
+- `POST /api/ai/search` - Search by topic or keyword
+- `GET /api/ai/history/:sessionId` - Retrieve chat history
+
+**Real-Time Endpoints**
+- `GET /api/realtime/metrics` - Get current metrics
+- `GET /api/realtime/top-agents` - Get top agents by activity
+- `GET /api/realtime/daily-activity` - Get daily activity data
+
+### WebSocket Connections
+
+Real-time updates are provided through Supabase Realtime subscriptions:
+
+- Agent activity updates
+- New conversation notifications
+- Metric changes
+- Analytics snapshots
+
+## Performance Optimization
+
+### Backend Optimizations
+
+- Database query optimization with indexes
+- Response caching for frequently accessed data
+- Rate limiting to prevent abuse
+- Connection pooling for database efficiency
+- Gzip compression for API responses
+
+### Frontend Optimizations
+
+- Code splitting and lazy loading
+- Memoization of expensive computations
+- Virtual scrolling for large lists
+- Debounced search and filter operations
+- Optimized re-rendering with React.memo
+
+### Database Optimizations
+
+- Materialized views for complex queries
+- Partitioning for large tables
+- Automated vacuum and analyze operations
+- Read replicas for scaling read operations
+- Connection pooling and prepared statements
+
+## Security Considerations
+
+### Authentication and Authorization
+
+- Row Level Security (RLS) policies in Supabase
+- API key authentication for AI services
+- CORS configuration for cross-origin requests
+- Rate limiting per IP address
+- Input validation and sanitization
+
+### Data Protection
+
+- Environment variable management
+- Secure credential storage
+- HTTPS enforcement in production
+- SQL injection prevention
+- XSS protection through React
+
+## Troubleshooting
+
+### Common Issues
+
+**Database Connection Errors**
+- Verify Supabase credentials in .env file
+- Check network connectivity
+- Ensure RLS policies are correctly configured
+- Verify service role key permissions
+
+**AI Assistant Not Responding**
+- Confirm OpenRouter API key is valid
+- Check API rate limits and quotas
+- Verify network connectivity to OpenRouter
+- Review error logs for specific issues
+
+**Real-Time Updates Not Working**
+- Enable Realtime in Supabase dashboard
+- Check WebSocket connection status
+- Verify table-level Realtime settings
+- Review browser console for errors
+
+**Build Failures**
+- Clear node_modules and reinstall dependencies
+- Verify Node.js version compatibility
+- Check for TypeScript compilation errors
+- Review build logs for specific errors
+
+## Contributing
+
+Contributions are welcome. Please follow these guidelines:
+
+1. Fork the repository
+2. Create a feature branch
+3. Implement changes with appropriate tests
+4. Submit a pull request with detailed description
+5. Ensure all tests pass and code follows style guidelines
+
+## License
+
+This project is part of the Agentic Reserve System (ARS) research initiative.
+
+## Acknowledgments
+
+- Colosseum Agent Hackathon for providing the forum platform
+- Supabase for real-time database infrastructure
+- OpenRouter for AI API access
+- NVIDIA for Nemotron AI models
+
+## Contact and Support
+
+**Project Repository**: https://github.com/protocoldaemon-sec/colosseum-agent-hackathon-analytics
+
+**Research Initiative**: Agentic Reserve System (ARS)
+- GitHub: https://github.com/protocoldaemon-sec/agentic-reserve-system
+- Forum: https://colosseum.com/agent-hackathon
+
+For issues, questions, or collaboration inquiries, please open an issue on the GitHub repository.
