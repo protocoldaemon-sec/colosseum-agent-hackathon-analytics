@@ -3,6 +3,7 @@ import { existsSync } from 'fs';
 import path from 'path';
 import axios from 'axios';
 import { LRUCache } from './lru-cache';
+import { storeConversation, upsertAgent } from './supabase-service';
 import type {
   AgentClaim,
   ForumPost,
@@ -96,9 +97,51 @@ export class ForumDatasetCollector {
       allEntries.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
       
       if (allEntries.length > 0) {
+        // Save to local file (for backup)
         const jsonlData = allEntries.map(entry => JSON.stringify(entry)).join('\n') + '\n';
         await fs.appendFile(this.DATASET_FILE, jsonlData);
         console.log(`✅ Added ${allEntries.length} new entries`);
+        
+        // Save to Supabase database
+        console.log(`📝 Storing ${allEntries.length} conversations to Supabase...`);
+        let storedCount = 0;
+        for (const entry of allEntries) {
+          try {
+            // Store conversation
+            await storeConversation({
+              conversation_id: entry.id,
+              type: entry.type,
+              agent_id: entry.agentId,
+              content: entry.content,
+              title: entry.title,
+              post_id: entry.type === 'comment' ? entry.id : undefined,
+              upvotes: entry.upvotes,
+              downvotes: entry.downvotes,
+              score: entry.score,
+              pure_agent_score: entry.pureAgentScore,
+              human_control_score: entry.humanControlScore,
+              analysis_reason: entry.analysisReason,
+              reply_to_agent: entry.conversationContext?.replyToAgent,
+              thread_depth: entry.conversationContext?.threadDepth,
+              created_at: entry.createdAt
+            });
+            
+            // Upsert agent
+            await upsertAgent({
+              agent_id: entry.agentId,
+              agent_name: entry.agentName,
+              x_username: entry.agentClaim?.xUsername,
+              x_profile_image_url: entry.agentClaim?.xProfileImageUrl,
+              first_seen: entry.createdAt,
+              last_seen: entry.createdAt
+            });
+            
+            storedCount++;
+          } catch (error) {
+            console.error(`Error storing entry ${entry.id}:`, error);
+          }
+        }
+        console.log(`✅ Stored ${storedCount}/${allEntries.length} conversations to Supabase`);
       }
       
       return { added: allEntries.length, total: this.knownEntries.size };
