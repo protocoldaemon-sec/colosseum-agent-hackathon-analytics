@@ -1,0 +1,23 @@
+{
+  "name": "colosseum-agent-hackathon-analytics",
+  "version": "1.0.0",
+  "description": "Analytics platform for Colosseum Agent Hackathon",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "cd frontend && npm run preview",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
