@@ -1,0 +1,34 @@
+# Environment variables (CRITICAL: Never commit these!)
+.env
+.env.local
+.env.*.local
+*.env
+backend/.env
+frontend/.env
+
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Build outputs
+dist/
+build/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Datasets (may contain sensitive data)
+datasets/
+*.jsonl
+
+# Temporary files
+.temp/
+tmp/
