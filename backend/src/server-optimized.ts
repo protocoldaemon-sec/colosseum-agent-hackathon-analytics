@@ -41,6 +41,14 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10mb' }));
 
+// Disable caching for all API responses
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  next();
+});
+
 // Datasets path
 const DATASETS_PATH = existsSync(join(__dirname, '../../datasets'))
   ? join(__dirname, '../../datasets')
@@ -289,31 +297,122 @@ app.get('/api/analytics/agent-network/:identifier', analyticsLimiter, validateAg
 // LEGACY ENDPOINTS (for backward compatibility)
 // ============================================
 
-app.get('/api/conversations', analyticsLimiter, validatePagination, validateType, validateSort, (req: Request, res: Response) => {
+app.get('/api/conversations', analyticsLimiter, validatePagination, validateType, validateSort, asyncHandler(async (req: Request, res: Response) => {
   const limit = parseInt(req.query.limit as string) || 50;
   const offset = parseInt(req.query.offset as string) || 0;
   const type = req.query.type as 'post' | 'comment' | undefined;
   const sortBy = (req.query.sortBy as 'recent' | 'pure' | 'human') || 'recent';
-  const tags = req.query.tags ? (req.query.tags as string).split(',') : undefined;
 
-  const result = analyticsService.getConversations({ limit, offset, type, sortBy, tags });
-  res.json(result);
-});
+  // Get from Supabase instead of local file
+  const { supabase } = await import('./supabase-service');
+  
+  let query = supabase
+    .from('conversations')
+    .select('*', { count: 'exact' });
+  
+  if (type) {
+    query = query.eq('type', type);
+  }
+  
+  if (sortBy === 'recent') {
+    query = query.order('created_at', { ascending: false });
+  } else if (sortBy === 'pure') {
+    query = query.order('pure_agent_score', { ascending: false });
+  } else if (sortBy === 'human') {
+    query = query.order('human_control_score', { ascending: false });
+  }
+  
+  query = query.range(offset, offset + limit - 1);
+  
+  const { data, error, count } = await query;
+  
+  if (error) {
+    console.error('Error fetching conversations:', error);
+    return res.status(500).json({ error: 'Failed to fetch conversations', details: error.message });
+  }
+  
+  res.json({ 
+    total: count || 0, 
+    data: data || [],
+    limit,
+    offset
+  });
+}));
 
-app.get('/api/agents', analyticsLimiter, validatePagination, (req: Request, res: Response) => {
+app.get('/api/agents', analyticsLimiter, validatePagination, asyncHandler(async (req: Request, res: Response) => {
   const limit = parseInt(req.query.limit as string) || 20;
-  const agents = analyticsService.getTopAgents(limit);
-  res.json({ total: agents.length, data: agents });
-});
+  const offset = parseInt(req.query.offset as string) || 0;
+  
+  // Get from Supabase instead of local file
+  const { supabase } = await import('./supabase-service');
+  
+  const { data, error, count } = await supabase
+    .from('agents')
+    .select('*', { count: 'exact' })
+    .order('total_messages', { ascending: false })
+    .range(offset, offset + limit - 1);
+  
+  if (error) {
+    console.error('Error fetching agents:', error);
+    return res.status(500).json({ error: 'Failed to fetch agents', details: error.message });
+  }
+  
+  res.json({ 
+    total: count || 0, 
+    data: data || [],
+    limit,
+    offset
+  });
+}));
 
-app.get('/api/analysis', analyticsLimiter, (req, res) => {
-  const overview = analyticsService.getOverview();
-  const topAgents = analyticsService.getTopAgents(15);
-  const topTags = analyticsService.getTopTags(10);
-  const behavior = analyticsService.getBehaviorDistribution();
-
-  res.json({ overview, topAgents, topTags, behaviorDistribution: behavior });
-});
+app.get('/api/analysis', analyticsLimiter, asyncHandler(async (req, res) => {
+  // Get real-time data from Supabase
+  const { supabase } = await import('./supabase-service');
+  
+  // Get overview stats
+  const { data: agents } = await supabase.from('agents').select('*');
+  const { data: conversations } = await supabase.from('conversations').select('*');
+  
+  const totalAgents = agents?.length || 0;
+  const totalConversations = conversations?.length || 0;
+  const totalPosts = conversations?.filter(c => c.type === 'post').length || 0;
+  const totalComments = conversations?.filter(c => c.type === 'comment').length || 0;
+  
+  const avgPureScore = conversations?.length 
+    ? conversations.reduce((sum, c) => sum + (c.pure_agent_score || 0), 0) / conversations.length 
+    : 0;
+  const avgHumanScore = conversations?.length 
+    ? conversations.reduce((sum, c) => sum + (c.human_control_score || 0), 0) / conversations.length 
+    : 0;
+  
+  // Get top agents
+  const topAgents = agents
+    ?.sort((a, b) => (b.total_messages || 0) - (a.total_messages || 0))
+    .slice(0, 15) || [];
+  
+  // Get behavior distribution
+  const pureAgentCount = conversations?.filter(c => (c.pure_agent_score || 0) >= 70).length || 0;
+  const humanControlCount = conversations?.filter(c => (c.human_control_score || 0) >= 70).length || 0;
+  const neutralCount = totalConversations - pureAgentCount - humanControlCount;
+  
+  res.json({ 
+    overview: {
+      totalAgents,
+      totalConversations,
+      totalPosts,
+      totalComments,
+      avgPureScore: Math.round(avgPureScore * 100) / 100,
+      avgHumanScore: Math.round(avgHumanScore * 100) / 100
+    },
+    topAgents,
+    topTags: [],
+    behaviorDistribution: {
+      pureAgent: pureAgentCount,
+      humanControl: humanControlCount,
+      neutral: neutralCount
+    }
+  });
+}));
 
 // ============================================
 // REAL-TIME ANALYTICS ENDPOINTS
