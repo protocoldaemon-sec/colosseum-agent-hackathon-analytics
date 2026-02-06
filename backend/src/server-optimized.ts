@@ -2,7 +2,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { existsSync } from 'fs';
@@ -151,19 +151,19 @@ app.get('/api/analytics/overview', analyticsLimiter, (req, res) => {
   res.json(overview);
 });
 
-app.get('/api/analytics/agents', analyticsLimiter, validatePagination, (req, res) => {
+app.get('/api/analytics/agents', analyticsLimiter, validatePagination, (req: Request, res: Response) => {
   const limit = parseInt(req.query.limit as string) || 20;
   const agents = analyticsService.getTopAgents(limit);
   res.json({ total: agents.length, data: agents });
 });
 
-app.get('/api/analytics/daily-activity', analyticsLimiter, validateDays, (req, res) => {
+app.get('/api/analytics/daily-activity', analyticsLimiter, validateDays, (req: Request, res: Response) => {
   const days = parseInt(req.query.days as string) || 14;
   const activity = analyticsService.getDailyActivity(days);
   res.json({ data: activity });
 });
 
-app.get('/api/analytics/tags', analyticsLimiter, validatePagination, (req, res) => {
+app.get('/api/analytics/tags', analyticsLimiter, validatePagination, (req: Request, res: Response) => {
   const limit = parseInt(req.query.limit as string) || 10;
   const tags = analyticsService.getTopTags(limit);
   res.json({ data: tags });
@@ -289,7 +289,7 @@ app.get('/api/analytics/agent-network/:identifier', analyticsLimiter, validateAg
 // LEGACY ENDPOINTS (for backward compatibility)
 // ============================================
 
-app.get('/api/conversations', analyticsLimiter, validatePagination, validateType, validateSort, (req, res) => {
+app.get('/api/conversations', analyticsLimiter, validatePagination, validateType, validateSort, (req: Request, res: Response) => {
   const limit = parseInt(req.query.limit as string) || 50;
   const offset = parseInt(req.query.offset as string) || 0;
   const type = req.query.type as 'post' | 'comment' | undefined;
@@ -300,7 +300,7 @@ app.get('/api/conversations', analyticsLimiter, validatePagination, validateType
   res.json(result);
 });
 
-app.get('/api/agents', analyticsLimiter, validatePagination, (req, res) => {
+app.get('/api/agents', analyticsLimiter, validatePagination, (req: Request, res: Response) => {
   const limit = parseInt(req.query.limit as string) || 20;
   const agents = analyticsService.getTopAgents(limit);
   res.json({ total: agents.length, data: agents });
